@@ -1,9 +1,9 @@
 import pg from "pg";
 import { BDConfig } from "../BD/BD"
-import Servicio from "../entities/Servicio";
 
 
-export default class EventRepository{
+
+export default class eventRepository{
 constructor(){
     const { Client } = pg;
     this.DBClient = new Client(BDConfig)
@@ -16,10 +16,41 @@ async getAllServicios(limit, offset) {
 }
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
-    const values = await client.query(query);
-    return values;
+    try {
+        await client.query(query);
+        console.log('Servicio borrado');
+    } catch (error) {
+        console.error('Error al borrar el servicio', error.stack);
+        throw error;
+    }
 }
 async EditarServicio(Servicio){
-    var query = 'UPDATE Servicios SET '
+    //id, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio
+    var query = `UPDATE Servicios SET Nombre = ${Servicio.Nombre}, Descripcion = ${Servicio.Descripcion}, Foto = ${Servicio.Foto}, Precio = ${Servicio.Precio}`
+    try {
+        await client.query(query);
+        console.log('Servicio actualizado');
+    } catch (error) {
+        console.error('Error al actualizar el servicio', error.stack);
+        throw error;
+    }
+}
+async CrearServicio(Servicio){
+    var query = `INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio) VALUES ($1, $2, $3, $4, $5, $6)`
+    const values = [
+        Servicio.idCreador,
+        Servicio.idCategoria,
+        Servicio.Nombre,
+        Servicio.Descripcion,
+        Servicio.Foto,
+        Servicio.Precio
+    ];
+    try {
+        await client.query(query, values);
+        console.log('Servicio agregado');
+    } catch (error) {
+        console.error('Error al inscribir al servicio', error.stack);
+        throw error;
+    }
 }
 }
