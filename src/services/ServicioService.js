@@ -1,12 +1,13 @@
 import ServicioRepository from "../repositories/ServiciosRepository.js";
-
+const servicioRepository = new ServicioRepository();
 export default class ServicioService {
     async obtenerServicios(limit, offset) {
-        try {
-            return await ServicioRepository.getAllServicios(limit, offset);
-        } catch (error) {
-            throw new Error('Error al obtener los servicios');
-        }
+        return await servicioRepository.getAllServicios(limit, offset);
+        // try {
+        //     return await ServicioRepository.getAllServicios(limit, offset);
+        // } catch (error) {
+        //     throw new Error('Error al obtener los servicios');
+        // }
     }
 
     async borrarServicio(id, id_creator_user) {

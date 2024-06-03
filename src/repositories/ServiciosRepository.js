@@ -1,21 +1,18 @@
-import pg from "pg";
-import { BDConfig } from "../BD/BD.js"
+import {connect} from '../BD/database.js'
 
 export default class ServicioRepository{
-constructor(){
-    const { Client } = pg;
-    this.DBClient = new Client(BDConfig)
-    this.DBClient.connect()
-}
+
 async getAllServicios(limit, offset) {
     var query = `SELECT Nombre, Descripcion, Foto, Precio, Nombre.Categorias, Nombre.Usuarios FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id limit ${limit} offset ${offset}`;
-    const values = await client.query(query);
+    const db = await connect()
+    const [values] = await db.query(query);
     return values;
 }
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
-        await client.query(query);
+        const db = await connect()
+        await db.query(query);
         console.log('Servicio borrado');
     } catch (error) {
         console.error('Error al borrar el servicio', error.stack);
@@ -26,7 +23,8 @@ async EditarServicio(Servicio){
     //id, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio
     var query = `UPDATE Servicios SET Nombre = ${Servicio.Nombre}, Descripcion = ${Servicio.Descripcion}, Foto = ${Servicio.Foto}, Precio = ${Servicio.Precio}`
     try {
-        await client.query(query);
+        const db = await connect()
+        await db.query(query);
         console.log('Servicio actualizado');
     } catch (error) {
         console.error('Error al actualizar el servicio', error.stack);
@@ -44,7 +42,8 @@ async CrearServicio(Servicio){
         Servicio.Precio
     ];
     try {
-        await client.query(query, values);
+        const db = await connect()
+        await db.query(query, values);
         console.log('Servicio agregado');
     } catch (error) {
         console.error('Error al inscribir al servicio', error.stack);

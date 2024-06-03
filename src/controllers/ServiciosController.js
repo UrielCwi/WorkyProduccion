@@ -6,12 +6,14 @@ const servicioService = new ServicioService();
 
 router.get("/", async (req, res) => {
     const { limit, offset } = req.query;
-    try {
-        const servicios = await servicioService.obtenerServicios(limit, offset);
-        res.status(200).json(servicios);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+    const servicios = await servicioService.obtenerServicios(limit, offset);
+    res.status(200).json(servicios);
+    // try {
+    //     const servicios = await servicioService.obtenerServicios(limit, offset);
+    //     res.status(200).json(servicios);
+    // } catch (error) {
+    //     res.status(500).json({ error: error.message });
+    // }
 });
 
 router.delete("/:id/:id_creator_user", async (req, res) => {
