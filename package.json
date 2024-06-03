@@ -6,17 +6,17 @@
     "module": "main",
     "type": "module",
     "scripts": {
-      "start": "node src/script.js",
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "server": "nodemon script.js"
+        "start": "node src/script.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "server": "nodemon script.js"
     },
     "author": "Worky INC.",
     "license": "ISC",
-  "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.0",
-    "pg": "^8.11.5"
-  }
+    "dependencies": {
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "jsonwebtoken": "^9.0.2",
+        "nodemon": "^3.1.0",
+        "pg": "^8.11.5"
+    }
 }

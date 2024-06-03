@@ -1,45 +1,50 @@
-import { getAllServicios, BorrarServicio, EditarServicio, CrearServicio } from "../services/EventService";
-import Servicio from "../entities/Servicio";
+import ServicioService from "../services/ServicioService.js";
+import Servicio from "../entities/Servicio.js";
+import express from "express";
+const router = express.Router();
+const servicioService = new ServicioService();
 
-export const obtenerServicios = async (req, res) => {
+router.get("/", async (req, res) => {
+    const { limit, offset } = req.query;
     try {
-        const { limit, offset } = req.query;
-        const servicios = await getAllServicios(limit, offset);
+        const servicios = await servicioService.obtenerServicios(limit, offset);
         res.status(200).json(servicios);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener los servicios' });
+        res.status(500).json({ error: error.message });
     }
-};
+});
 
-export const borrarServicio = async (req, res) => {
+router.delete("/:id/:id_creator_user", async (req, res) => {
+    const { id, id_creator_user } = req.params;
     try {
-        const { id, id_creator_user } = req.params;
-        await BorrarServicio(id, id_creator_user);
+        await servicioService.borrarServicio(id, id_creator_user);
         res.status(200).json({ message: 'Servicio borrado exitosamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al borrar el servicio' });
+        res.status(500).json({ error: error.message });
     }
-};
+});
 
-export const editarServicio = async (req, res) => {
+router.put("/:id", async (req, res) => {
+    const { id } = req.params;
+    const { Nombre, Descripcion, Foto, Precio } = req.body;
     try {
-        const { id } = req.params;
-        const { Nombre, Descripcion, Foto, Precio } = req.body;
-        const servicio = new Servicio(id, Nombre, Descripcion, Foto, Precio);
-        await EditarServicio(servicio);
+        const servicio = new Servicio(id, null, null, Nombre, Descripcion, Foto, Precio);
+        await servicioService.editarServicio(servicio);
         res.status(200).json({ message: 'Servicio actualizado exitosamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar el servicio' });
+        res.status(500).json({ error: error.message });
     }
-};
+});
 
-export const crearServicio = async (req, res) => {
+router.post("/", async (req, res) => {
+    const { idCreador, idCategoria, Nombre, Descripcion, Foto, Precio } = req.body;
     try {
-        const { idCreador, idCategoria, Nombre, Descripcion, Foto, Precio } = req.body;
         const servicio = new Servicio(null, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio);
-        await CrearServicio(servicio);
+        await servicioService.crearServicio(servicio);
         res.status(201).json({ message: 'Servicio creado exitosamente' });
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear el servicio' });
+        res.status(500).json({ error: error.message });
     }
-};
+});
+
+export default router;
