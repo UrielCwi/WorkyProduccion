@@ -5,5 +5,5 @@ const config = {
     password : process.env.BD_PASSWORD,
     database : process.env.BD_DATABASE,
 }
-
+// https://www.youtube.com/watch?v=HMKVnwlhJO0
 export default config;
