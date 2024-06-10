@@ -26,10 +26,11 @@ export default class ServicioService {
     }
 
     async crearServicio(servicio) {
-        try {
-            await servicioRepository.CrearServicio(servicio);
-        } catch (error) {
-            throw new Error('Error al crear el servicio');
-        }
+        await servicioRepository.CrearServicio(servicio);
+        // try {
+        //     await servicioRepository.CrearServicio(servicio);
+        // } catch (error) {
+        //     throw new Error('Error al crear el servicio');
+        // }
     }
 }

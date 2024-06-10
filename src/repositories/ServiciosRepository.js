@@ -40,11 +40,12 @@ async CrearServicio(Servicio){
         Servicio.Nombre,
         Servicio.Descripcion,
         Servicio.Foto,
-        Servicio.Precio
+        parseInt(Servicio.Precio)
     ];
+    console.log(values)
     try {
-        const db = await getConnection()
-        await db.result().query(query, values);
+        const pool = await getConnection()
+        await pool.request().query(query, values);
         console.log('Servicio agregado');
     } catch (error) {
         console.error('Error al inscribir al servicio', error.stack);
