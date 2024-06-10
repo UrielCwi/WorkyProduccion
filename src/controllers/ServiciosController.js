@@ -5,8 +5,7 @@ const router = express.Router();
 const servicioService = new ServicioService();
 
 router.get("/", async (req, res) => {
-    const { limit, offset } = req.query;
-    const servicios = await servicioService.obtenerServicios(limit, offset);
+    const servicios = await servicioService.obtenerServicios();
     res.status(200).json(servicios);
     // try {
     //     const servicios = await servicioService.obtenerServicios(limit, offset);
