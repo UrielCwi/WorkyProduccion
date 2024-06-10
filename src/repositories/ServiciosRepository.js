@@ -3,7 +3,7 @@ import {getConnection} from '../BD/database.js'
 export default class ServicioRepository{
 
 async getAllServicios() {
-    var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre, Usuarios.Nombre 
+    var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre AS CategoriaNombre, Usuarios.Nombre AS UsuarioNombre
     FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
     const pool = await getConnection()
     const values = await pool.request().query(query);
@@ -12,8 +12,8 @@ async getAllServicios() {
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
-        const db = await getConnection()
-        await db.result().query(query);
+        const pool = await getConnection()
+        await pool.request().query(query);
         console.log('Servicio borrado');
     } catch (error) {
         console.error('Error al borrar el servicio', error.stack);
