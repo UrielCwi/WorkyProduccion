@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-const config = {
+export const config = {
     user : process.env.BD_USER,
     password : process.env.BD_PASSWORD,
     server : process.env.BD_SERVER,
@@ -11,4 +11,3 @@ const config = {
     }
 }
 // https://www.youtube.com/watch?v=HMKVnwlhJO0
-export default config;

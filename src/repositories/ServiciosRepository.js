@@ -1,4 +1,4 @@
-import getConnection from '../BD/database.js'
+import {getConnection} from '../BD/database.js'
 
 export default class ServicioRepository{
 
