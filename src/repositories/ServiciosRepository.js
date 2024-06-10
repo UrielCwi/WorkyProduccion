@@ -6,7 +6,7 @@ async getAllServicios() {
     var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre, Usuarios.Nombre 
     FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
     const pool = await getConnection()
-    const [values] = await pool.request().query(query);
+    const values = await pool.request().query(query);
     return values;
 }
 async BorrarServicio(id, id_creator_user){
