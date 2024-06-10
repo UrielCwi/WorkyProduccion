@@ -1,18 +1,18 @@
-import {connect} from '../BD/database.js'
+import getConnection from '../BD/database.js'
 
 export default class ServicioRepository{
 
 async getAllServicios(limit, offset) {
     var query = `SELECT Nombre, Descripcion, Foto, Precio, Nombre.Categorias, Nombre.Usuarios FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id limit ${limit} offset ${offset}`;
-    const db = await connect()
-    const [values] = await db.query(query);
+    const db = await getConnection()
+    const [values] = await db.result().query(query);
     return values;
 }
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
-        const db = await connect()
-        await db.query(query);
+        const db = await getConnection()
+        await db.result().query(query);
         console.log('Servicio borrado');
     } catch (error) {
         console.error('Error al borrar el servicio', error.stack);
@@ -23,8 +23,8 @@ async EditarServicio(Servicio){
     //id, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio
     var query = `UPDATE Servicios SET Nombre = ${Servicio.Nombre}, Descripcion = ${Servicio.Descripcion}, Foto = ${Servicio.Foto}, Precio = ${Servicio.Precio}`
     try {
-        const db = await connect()
-        await db.query(query);
+        const db = await getConnection()
+        await db.result().query(query);
         console.log('Servicio actualizado');
     } catch (error) {
         console.error('Error al actualizar el servicio', error.stack);
@@ -42,8 +42,8 @@ async CrearServicio(Servicio){
         Servicio.Precio
     ];
     try {
-        const db = await connect()
-        await db.query(query, values);
+        const db = await getConnection()
+        await db.result().query(query, values);
         console.log('Servicio agregado');
     } catch (error) {
         console.error('Error al inscribir al servicio', error.stack);

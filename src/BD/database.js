@@ -1,6 +1,11 @@
 import config from "./BD.js";
-import mysql from 'mysql2/promise.js';
+import sql from "mssql"
 
-export const connect = async () => {
-    return await mysql.createConnection(config);
-};
+async function getConnection(){
+    try {
+        const pool = await sql.connect(config)
+        return pool;
+    } catch(error){
+        console.log(error)
+    }   
+}
