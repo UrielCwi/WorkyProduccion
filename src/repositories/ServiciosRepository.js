@@ -3,7 +3,8 @@ import {getConnection} from '../BD/database.js'
 export default class ServicioRepository{
 
 async getAllServicios(limit, offset) {
-    var query = `SELECT Nombre, Descripcion, Foto, Precio, Nombre.Categorias, Nombre.Usuarios FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id limit ${limit} offset ${offset}`;
+    var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre, Usuarios.Nombre 
+    FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
     const db = await getConnection()
     const [values] = await db.result().query(query);
     return values;

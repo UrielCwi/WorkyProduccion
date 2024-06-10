@@ -1,5 +1,5 @@
 import {config} from "./BD.js";
-import sql from "mssql"
+import sql from "mssql";
 
 export async function getConnection(){
     try {
