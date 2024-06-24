@@ -84,10 +84,12 @@ async CrearServicio(servicio, disponibilidades){
 
         const idServicio = serviceResult.recordset[0].idServicio;
         for (const disponibilidad of disponibilidades) {
+            console.log(disponibilidad.HoraDesde)
+            
             await transaction.request()
                 .input('Dia', sql.SmallInt, disponibilidad.Dia)
-                .input('HoraDesde', sql.Date, disponibilidad.HoraDesde)
-                .input('HoraHasta', sql.Date, disponibilidad.HoraHasta)
+                .input('HoraDesde', sql.Time(7), disponibilidad.HoraDesde)
+                .input('HoraHasta', sql.Time(7), disponibilidad.HoraHasta)
                 .input('idServicio', sql.Int, idServicio)
                 .query(`
                     INSERT INTO Disponibilidad (Dia, HoraDesde, HoraHasta, idServicio)
