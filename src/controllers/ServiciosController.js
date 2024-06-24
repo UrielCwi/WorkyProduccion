@@ -5,22 +5,19 @@ const router = express.Router();
 const servicioService = new ServicioService();
 
 router.get("/", async (req, res) => {
-    const servicios = await servicioService.obtenerServicios();
-    res.status(200).json(servicios);
-    console.log(servicios)
-    // try {
-    //     const servicios = await servicioService.obtenerServicios(limit, offset);
-    //     res.status(200).json(servicios);
-    // } catch (error) {
-    //     res.status(500).json({ error: error.message });
-    // }
+    try {
+        const servicios = await servicioService.obtenerServicios();
+        res.status(200).json(servicios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 router.delete("/:id/:id_creator_user", async (req, res) => {
     const { id, id_creator_user } = req.params;
     try {
         await servicioService.borrarServicio(id, id_creator_user);
-        res.status(200).json({ message: 'Servicio borrado exitosamente' });
+        res.status(201).json({ message: 'Servicio borrado exitosamente' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -39,10 +36,13 @@ router.put("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const { idCreador, idCategoria, Nombre, Descripcion, Foto, Precio } = req.body;
+    const { idCreador, idCategoria, Nombre, Descripcion, Foto, Precio, Disponibilidades } = req.body;
     try {
+        if (!Array.isArray(Disponibilidades)) {
+            return res.status(400).json({ error: "Disponibilidades tiene que ser array de datos" });
+        }
         const servicio = new Servicio(null, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio);
-        await servicioService.crearServicio(servicio);
+        await servicioService.crearServicio(servicio, Disponibilidades);
         res.status(201).json({ message: 'Servicio creado exitosamente' });
     } catch (error) {
         res.status(500).json({ error: error.message });

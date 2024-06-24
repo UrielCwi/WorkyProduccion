@@ -18,21 +18,18 @@ export default class ServicioService {
     }
 
     async editarServicio(servicio) {
-        console.log(servicio)
-        await servicioRepository.EditarServicio(servicio);
-        // try {
-        //     await servicioRepository.EditarServicio(id, servicio);
-        // } catch (error) {
-        //     throw new Error('Error al actualizar el servicio (Service)');
-        // }
+        try {
+            await servicioRepository.EditarServicio(servicio);
+        } catch (error) {
+            throw new Error('Error al actualizar el servicio (Service)');
+        }
     }
 
-    async crearServicio(servicio) {
-        await servicioRepository.CrearServicio(servicio);
-        // try {
-        //     await servicioRepository.CrearServicio(servicio);
-        // } catch (error) {
-        //     throw new Error('Error al crear el servicio');
-        // }
+    async crearServicio(servicio, disponibilidades) {
+        try {
+            await servicioRepository.CrearServicio(servicio, disponibilidades);
+        } catch (error) {
+            throw new Error('Error al crear el servicio');
+        }
     }
 }

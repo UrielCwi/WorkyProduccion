@@ -47,22 +47,60 @@ async EditarServicio(servicio){
         throw error;
     }
 }
-async CrearServicio(servicio){
-    const query = "INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio) VALUES (@idCreador, @idCategoria, @Nombre, @Descripcion, @Foto, @Precio)";
-    const pool = await getConnection()
-    const request = pool.request();
-    request.input('idCreador', sql.Int, servicio.idCreador);
-    request.input('idCategoria', sql.Int, servicio.idCategoria);
-    request.input('Nombre', sql.VarChar, servicio.Nombre);
-    request.input('Descripcion', sql.Text, servicio.Descripcion);
-    request.input('Foto', sql.VarBinary, servicio.Foto);
-    request.input('Precio', sql.Money, servicio.Precio);
+async CrearServicio(servicio, disponibilidades){
+    // const query = "INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio) VALUES (@idCreador, @idCategoria, @Nombre, @Descripcion, @Foto, @Precio)";
+    // const pool = await getConnection()
+    // const request = pool.request();
+    // request.input('idCreador', sql.Int, servicio.idCreador);
+    // request.input('idCategoria', sql.Int, servicio.idCategoria);
+    // request.input('Nombre', sql.VarChar, servicio.Nombre);
+    // request.input('Descripcion', sql.Text, servicio.Descripcion);
+    // request.input('Foto', sql.VarBinary, servicio.Foto);
+    // request.input('Precio', sql.Money, servicio.Precio);
+    // try {
+    //     await request.query(query);
+    //     console.log('Servicio agregado');
+    // } catch (error) {
+    //     console.error('Error al inscribir al servicio', error.stack);
+    //     throw error;
+    // }
+    const pool = await getConnection();
+    const transaction = new sql.Transaction(pool);
+
     try {
-        await request.query(query);
-        console.log('Servicio agregado');
-    } catch (error) {
-        console.error('Error al inscribir al servicio', error.stack);
-        throw error;
+        await transaction.begin();
+        const serviceResult = await transaction.request()
+            .input('idCreador', sql.Int, servicio.idCreador)
+            .input('idCategoria', sql.Int, servicio.idCategoria)
+            .input('Nombre', sql.VarChar(50), servicio.Nombre)
+            .input('Descripcion', sql.Text, servicio.Descripcion)
+            .input('Foto', sql.Image, servicio.Foto)
+            .input('Precio', sql.Money, servicio.Precio)
+            .query(`
+                INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio)
+                VALUES (@idCreador, @idCategoria, @Nombre, @Descripcion, @Foto, @Precio);
+                SELECT SCOPE_IDENTITY() AS idServicio;
+            `);
+
+        const idServicio = serviceResult.recordset[0].idServicio;
+        for (const disponibilidad of disponibilidades) {
+            await transaction.request()
+                .input('Dia', sql.SmallInt, disponibilidad.Dia)
+                .input('HoraDesde', sql.Date, disponibilidad.HoraDesde)
+                .input('HoraHasta', sql.Date, disponibilidad.HoraHasta)
+                .input('idServicio', sql.Int, idServicio)
+                .query(`
+                    INSERT INTO Disponibilidad (Dia, HoraDesde, HoraHasta, idServicio)
+                    VALUES (@Dia, @HoraDesde, @HoraHasta, @idServicio);
+                `);
+        }
+        await transaction.commit();
+        console.log('Servicio y disponibilidades insertados correctamente.');
+    } catch (err) {
+        await transaction.rollback();
+        console.error('Error al insertar servicio y disponibilidades:', err);
+    } finally {
+        pool.close();
     }
 }
 }
