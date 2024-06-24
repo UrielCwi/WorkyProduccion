@@ -18,11 +18,13 @@ export default class ServicioService {
     }
 
     async editarServicio(servicio) {
-        try {
-            await servicioRepository.EditarServicio(servicio);
-        } catch (error) {
-            throw new Error('Error al actualizar el servicio');
-        }
+        console.log(servicio)
+        await servicioRepository.EditarServicio(servicio);
+        // try {
+        //     await servicioRepository.EditarServicio(id, servicio);
+        // } catch (error) {
+        //     throw new Error('Error al actualizar el servicio (Service)');
+        // }
     }
 
     async crearServicio(servicio) {

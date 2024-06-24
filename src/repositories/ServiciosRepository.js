@@ -29,15 +29,21 @@ async BorrarServicio(id, id_creator_user){
         throw error;
     }
 }
-async EditarServicio(Servicio){
-    //id, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio
-    var query = `UPDATE Servicios SET Nombre = ${Servicio.Nombre}, Descripcion = ${Servicio.Descripcion}, Foto = ${Servicio.Foto}, Precio = ${Servicio.Precio}`
+async EditarServicio(servicio){
+    var query = `UPDATE Servicios SET Nombre = @Nombre, Descripcion = @Descripcion, Foto = @Foto, Precio = @Precio WHERE id = @Id`
+    const pool = await getConnection()
+    const request = pool.request();
+    request.input('Id', sql.Int, servicio.id)
+    request.input('Nombre', sql.VarChar, servicio.Nombre);
+    request.input('Descripcion', sql.Text, servicio.Descripcion);
+    request.input('Foto', sql.VarBinary, servicio.Foto);
+    request.input('Precio', sql.Money, servicio.Precio);
+    console.log(query)
     try {
-        const db = await getConnection()
-        await db.result().query(query);
+        await request.query(query);
         console.log('Servicio actualizado');
     } catch (error) {
-        console.error('Error al actualizar el servicio', error.stack);
+        console.error('Error al actualizar el servicio (Repository', error.stack);
         throw error;
     }
 }
@@ -51,7 +57,6 @@ async CrearServicio(servicio){
     request.input('Descripcion', sql.Text, servicio.Descripcion);
     request.input('Foto', sql.VarBinary, servicio.Foto);
     request.input('Precio', sql.Money, servicio.Precio);
-    console.log(request)
     try {
         await request.query(query);
         console.log('Servicio agregado');
