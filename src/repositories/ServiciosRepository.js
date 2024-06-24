@@ -12,7 +12,7 @@ async getAllServicios() {
           ,[HoraHasta]
           ,[idServicio]
       FROM [dbo].[Disponibilidad]
-      WHERE Disponibilidad.idServicio = Servicios.id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS Disponibilidad
+      WHERE Disponibilidad.idServicio = Servicios.id FOR JSON PATH) AS Disponibilidad
       FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
     const pool = await getConnection()
     const {recordset} = await pool.request().query(query);
