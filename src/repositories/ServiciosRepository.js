@@ -30,7 +30,22 @@ async BorrarServicio(id, id_creator_user){
     }
 }
 async EditarServicio(servicio){
-    var query = `UPDATE Servicios SET Nombre = @Nombre, Descripcion = @Descripcion, Foto = @Foto, Precio = @Precio WHERE id = @Id`
+    var query = `UPDATE Servicios SET `
+    if (servicio.Nombre != null){
+        query += `Nombre = @Nombre, `
+    }
+    if (servicio.Descripcion != null){
+        query += `Descripcion = @Descripcion, `
+    }
+    if (servicio.Foto != null){
+        query += `Foto = @Foto, `
+    }
+    if (servicio.Precio != null){
+        query += `Precio = @Precio`
+    }
+    if (query.endsWith(', '))
+    query = query.slice(0, -1)
+    query += ` WHERE id = @Id`
     const pool = await getConnection()
     const request = pool.request();
     request.input('Id', sql.Int, servicio.id)
