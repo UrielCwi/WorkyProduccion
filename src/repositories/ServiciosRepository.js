@@ -29,6 +29,31 @@ async BorrarServicio(id, id_creator_user){
         throw error;
     }
 }
+async EditarDisponibilidad(disponibilidad){
+    var query = `UPDATE Disponibilidad SET `
+    if (disponibilidad.HoraDesde != null){
+        query += `HoraDesde = '${disponibilidad.HoraDesde}', `
+    }
+    if (disponibilidad.HoraHasta != null){
+        query += `HoraHasta = '${disponibilidad.HoraHasta}', `
+    }
+    if (query.endsWith(', ')){
+        query = query.slice(0, -2)
+    }
+    query += ` WHERE id = @Id`
+    console.log(query)
+    const pool = await getConnection()
+    const request = pool.request();
+    request.input('Id', sql.Int, disponibilidad.id)
+    try {
+        await request.query(query);
+        console.log('Disponibilidad');
+    } catch (error) {
+        console.error('Error al actualizar la disponibilidad (Repository', error.stack);
+        throw error;
+    }
+    
+}
 async EditarServicio(servicio){
     var query = `UPDATE Servicios SET `
     if (servicio.Nombre != null){
@@ -43,8 +68,9 @@ async EditarServicio(servicio){
     if (servicio.Precio != null){
         query += `Precio = @Precio`
     }
-    if (query.endsWith(', '))
-    query = query.slice(0, -1)
+    if (query.endsWith(', ')){
+        query = query.slice(0, -1)
+    }
     query += ` WHERE id = @Id`
     const pool = await getConnection()
     const request = pool.request();

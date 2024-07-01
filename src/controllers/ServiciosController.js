@@ -35,6 +35,22 @@ router.put("/:id", async (req, res) => {
     }
 });
 
+router.put("/:id/Disponibilidad", async (req, res) => {
+    const { id } = req.params;
+    const { HoraDesde, HoraHasta } = req.body;
+    try {
+        const disponibilidad = {
+            id,
+            HoraDesde,
+            HoraHasta
+        }
+        await servicioService.EditarDisponibilidad(disponibilidad);
+        res.status(200).json({ message: 'Servicio actualizado exitosamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 router.post("/", async (req, res) => {
     const { idCreador, idCategoria, Nombre, Descripcion, Foto, Precio, Disponibilidades } = req.body;
     try {

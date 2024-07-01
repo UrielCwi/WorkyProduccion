@@ -6,9 +6,9 @@
     "module": "main",
     "type": "module",
     "scripts": {
-        "start": "node src/script.js",
+        "start": "nodemon src/script.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "server": "nodemon script.js"
+        "server": "node script.js"
     },
     "author": "Worky INC.",
     "license": "ISC",
@@ -18,7 +18,7 @@
         "jsonwebtoken": "^9.0.2",
         "mssql": "^10.0.2",
         "mysql2": "^3.10.0",
-        "nodemon": "^3.1.2",
+        "nodemon": "^3.1.4",
         "pg": "^8.11.5"
     }
 }
