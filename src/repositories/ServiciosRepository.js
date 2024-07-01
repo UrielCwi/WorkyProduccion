@@ -48,22 +48,6 @@ async EditarServicio(servicio){
     }
 }
 async CrearServicio(servicio, disponibilidades){
-    // const query = "INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio) VALUES (@idCreador, @idCategoria, @Nombre, @Descripcion, @Foto, @Precio)";
-    // const pool = await getConnection()
-    // const request = pool.request();
-    // request.input('idCreador', sql.Int, servicio.idCreador);
-    // request.input('idCategoria', sql.Int, servicio.idCategoria);
-    // request.input('Nombre', sql.VarChar, servicio.Nombre);
-    // request.input('Descripcion', sql.Text, servicio.Descripcion);
-    // request.input('Foto', sql.VarBinary, servicio.Foto);
-    // request.input('Precio', sql.Money, servicio.Precio);
-    // try {
-    //     await request.query(query);
-    //     console.log('Servicio agregado');
-    // } catch (error) {
-    //     console.error('Error al inscribir al servicio', error.stack);
-    //     throw error;
-    // }
     const pool = await getConnection();
     const transaction = new sql.Transaction(pool);
 
@@ -83,17 +67,13 @@ async CrearServicio(servicio, disponibilidades){
             `);
 
         const idServicio = serviceResult.recordset[0].idServicio;
-        for (const disponibilidad of disponibilidades) {
-            console.log(disponibilidad.HoraDesde)
-            
+        for (var disponibilidad of disponibilidades) {
             await transaction.request()
                 .input('Dia', sql.SmallInt, disponibilidad.Dia)
-                .input('HoraDesde', sql.Time(7), disponibilidad.HoraDesde)
-                .input('HoraHasta', sql.Time(7), disponibilidad.HoraHasta)
                 .input('idServicio', sql.Int, idServicio)
                 .query(`
                     INSERT INTO Disponibilidad (Dia, HoraDesde, HoraHasta, idServicio)
-                    VALUES (@Dia, @HoraDesde, @HoraHasta, @idServicio);
+                    VALUES (@Dia, '${disponibilidad.HoraDesde}', '${disponibilidad.HoraHasta}', @idServicio);
                 `);
         }
         await transaction.commit();
