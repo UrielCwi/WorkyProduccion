@@ -39,4 +39,11 @@ export default class ServicioService {
             throw new Error('Error al editar la disponibilidad');
         }
     }
+    async BuscarServicioPorNombre(Nombre) {
+        //try {
+            return await servicioRepository.BuscarServicioPorNombre();
+        //} catch (error) {
+        //    throw new Error('Error al obtener los servicios');
+        //}
+    }
 }

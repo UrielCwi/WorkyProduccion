@@ -1,17 +1,18 @@
 import ServicioService from "../services/ServicioService.js";
 import Servicio from "../entities/Servicio.js";
 import express from "express";
+import Disponibilidad from "../entities/Disponibilidad.js";
 const router = express.Router();
 const servicioService = new ServicioService();
 
-router.get("/", async (req, res) => {
-    try {
-        const servicios = await servicioService.obtenerServicios();
-        res.status(200).json(servicios);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+// router.get("/", async (req, res) => {
+//     try {
+//         const servicios = await servicioService.obtenerServicios();
+//         res.status(200).json(servicios);
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
 
 router.delete("/:id/:id_creator_user", async (req, res) => {
     const { id, id_creator_user } = req.params;
@@ -37,13 +38,9 @@ router.put("/:id", async (req, res) => {
 
 router.put("/:id/Disponibilidad", async (req, res) => {
     const { id } = req.params;
-    const { HoraDesde, HoraHasta } = req.body;
+    const { HoraDesde, HoraHasta, DuracionTurno, Descanso} = req.body;
     try {
-        const disponibilidad = {
-            id,
-            HoraDesde,
-            HoraHasta
-        }
+        const disponibilidad = new Disponibilidad(id, null, HoraDesde, HoraHasta, DuracionTurno, Descanso, null);
         await servicioService.EditarDisponibilidad(disponibilidad);
         res.status(200).json({ message: 'Servicio actualizado exitosamente' });
     } catch (error) {
@@ -60,6 +57,16 @@ router.post("/", async (req, res) => {
         const servicio = new Servicio(null, idCreador, idCategoria, Nombre, Descripcion, Foto, Precio);
         await servicioService.crearServicio(servicio, Disponibilidades);
         res.status(201).json({ message: 'Servicio creado exitosamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get("/", async (req, res) => {
+    const { Nombre } = req.body;
+    try {
+        const servicios = await servicioService.BuscarServicioPorNombre(Nombre);
+        res.status(200).json(servicios);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

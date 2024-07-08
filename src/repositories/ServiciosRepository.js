@@ -4,20 +4,20 @@ import sql from "mssql";
 
 export default class ServicioRepository{
 
-async getAllServicios() {
-    var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre AS CategoriaNombre, Usuarios.Nombre AS UsuarioNombre,
-    (SELECT [id]
-          ,[Dia]
-          ,[HoraDesde]
-          ,[HoraHasta]
-          ,[idServicio]
-      FROM [dbo].[Disponibilidad]
-      WHERE Disponibilidad.idServicio = Servicios.id FOR JSON PATH) AS Disponibilidad
-      FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
-    const pool = await getConnection()
-    const {recordset} = await pool.request().query(query);
-    return recordset;
-}
+// async getAllServicios() {
+//     var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre AS CategoriaNombre, Usuarios.Nombre AS UsuarioNombre,
+//     (SELECT [id]
+//           ,[Dia]
+//           ,[HoraDesde]
+//           ,[HoraHasta]
+//           ,[idServicio]
+//       FROM [dbo].[Disponibilidad]
+//       WHERE Disponibilidad.idServicio = Servicios.id FOR JSON PATH) AS Disponibilidad
+//       FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
+//     const pool = await getConnection()
+//     const {recordset} = await pool.request().query(query);
+//     return recordset;
+// }
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
@@ -36,6 +36,12 @@ async EditarDisponibilidad(disponibilidad){
     }
     if (disponibilidad.HoraHasta != null){
         query += `HoraHasta = '${disponibilidad.HoraHasta}', `
+    }
+    if (disponibilidad.DuracionTurno != null){
+        query += `DuracionTurno = '${disponibilidad.DuracionTurno}', `
+    }
+    if (disponibilidad.Descanso != null){
+        query += `Descanso = '${disponibilidad.Descanso}', `
     }
     if (query.endsWith(', ')){
         query = query.slice(0, -2)
@@ -113,8 +119,9 @@ async CrearServicio(servicio, disponibilidades){
                 .input('Dia', sql.SmallInt, disponibilidad.Dia)
                 .input('idServicio', sql.Int, idServicio)
                 .query(`
-                    INSERT INTO Disponibilidad (Dia, HoraDesde, HoraHasta, idServicio)
-                    VALUES (@Dia, '${disponibilidad.HoraDesde}', '${disponibilidad.HoraHasta}', @idServicio);
+                    INSERT INTO Disponibilidad (Dia, HoraDesde, HoraHasta, idServicio, DuracionTurno, Descanso)
+                    VALUES (@Dia, '${disponibilidad.HoraDesde}', '${disponibilidad.HoraHasta}', @idServicio,
+                     '${disponibilidad.DuracionTurno}', '${disponibilidad.Descanso}');
                 `);
         }
         await transaction.commit();
@@ -126,4 +133,37 @@ async CrearServicio(servicio, disponibilidades){
         pool.close();
     }
 }
+
+async BuscarServicioPorNombre(Nombre){
+    const pool = await getConnection()
+    const request = await pool.request()
+    var query = `SELECT * from Servicios WHERE`
+    if (servicio.Nombre != null) {
+        query +=  `Nombre LIKE '%@Nombre%', `
+    }
+    if () {
+        
+    }
+    request.input('Nombre', sql.VarChar(50), Nombre)
+    const {recordset} = await request.query();
+    return recordset
 }
+}
+
+// var query = `UPDATE Servicios SET `
+//     if (servicio.Nombre != null){
+//         query += `Nombre = @Nombre, `
+//     }
+//     if (servicio.Descripcion != null){
+//         query += `Descripcion = @Descripcion, `
+//     }
+//     if (servicio.Foto != null){
+//         query += `Foto = @Foto, `
+//     }
+//     if (servicio.Precio != null){
+//         query += `Precio = @Precio`
+//     }
+//     if (query.endsWith(', ')){
+//         query = query.slice(0, -1)
+//     }
+//     query += ` WHERE id = @Id`
