@@ -2,17 +2,19 @@ import ServicioService from "../services/ServicioService.js";
 import Servicio from "../entities/Servicio.js";
 import express from "express";
 import Disponibilidad from "../entities/Disponibilidad.js";
+import Usuario from "../entities/Usuario.js";
 const router = express.Router();
 const servicioService = new ServicioService();
 
-// router.get("/", async (req, res) => {
-//     try {
-//         const servicios = await servicioService.obtenerServicios();
-//         res.status(200).json(servicios);
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
+router.get("/", async (req, res) => {
+    const { Nombre, CategoriaNombre, UsuarioNombre } = req.body;
+    try {
+        const servicios = await servicioService.BuscarServicioPorNombre(Nombre, CategoriaNombre, UsuarioNombre);
+        res.status(200).json(servicios);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 router.delete("/:id/:id_creator_user", async (req, res) => {
     const { id, id_creator_user } = req.params;
@@ -62,14 +64,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.get("/", async (req, res) => {
-    const { Nombre } = req.body;
-    try {
-        const servicios = await servicioService.BuscarServicioPorNombre(Nombre);
-        res.status(200).json(servicios);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+
 
 export default router;

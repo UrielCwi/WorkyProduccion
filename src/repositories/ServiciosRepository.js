@@ -4,20 +4,6 @@ import sql from "mssql";
 
 export default class ServicioRepository{
 
-// async getAllServicios() {
-//     var query = `SELECT Servicios.Nombre, Descripcion, Foto, Precio, Categorias.Nombre AS CategoriaNombre, Usuarios.Nombre AS UsuarioNombre,
-//     (SELECT [id]
-//           ,[Dia]
-//           ,[HoraDesde]
-//           ,[HoraHasta]
-//           ,[idServicio]
-//       FROM [dbo].[Disponibilidad]
-//       WHERE Disponibilidad.idServicio = Servicios.id FOR JSON PATH) AS Disponibilidad
-//       FROM Servicios INNER JOIN Categorias ON Servicios.idCategoria = Categorias.id INNER JOIN Usuarios ON Servicios.idCreador = Usuarios.id`;
-//     const pool = await getConnection()
-//     const {recordset} = await pool.request().query(query);
-//     return recordset;
-// }
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
@@ -134,36 +120,32 @@ async CrearServicio(servicio, disponibilidades){
     }
 }
 
-async BuscarServicioPorNombre(Nombre){
+async BuscarServicioPorNombre(Nombre, CategoriaNombre, UsuarioNombre){
     const pool = await getConnection()
     const request = await pool.request()
-    var query = `SELECT * from Servicios WHERE`
-    if (servicio.Nombre != null) {
-        query +=  `Nombre LIKE '%@Nombre%', `
+    var query = `SELECT s.id, idCreador, idCategoria, s.Nombre, Descripcion, Foto, Precio, c.Nombre, u.Nombre from Servicios s
+    INNER JOIN Categorias c on s.idCategoria = c.id
+    INNER JOIN Usuarios u on s.idCreador = u.id WHERE `
+    if (Nombre != null) {
+        query +=  `s.Nombre LIKE @Nombre AND `
+        request.input('Nombre', sql.VarChar(50), Nombre)
     }
-    if () {
-        
+    if (CategoriaNombre != null) {
+        query += `c.Nombre = @CategoriaNombre AND `
+        request.input('CategoriaNombre', sql.VarChar(50), CategoriaNombre)
     }
-    request.input('Nombre', sql.VarChar(50), Nombre)
-    const {recordset} = await request.query();
-    return recordset
+    if (UsuarioNombre != null) {
+        query += `u.Nombre = @UsuarioNombre `
+        request.input('UsuarioNombre', sql.VarChar(50), UsuarioNombre)
+    }
+    if (query.endsWith(' AND ')) {
+        query = query.slice(0, -5)
+    }
+    if (query.endsWith(' WHERE ')) {
+        query = query.slice(0, -6)
+    }
+    console.log(query)
+    const res = await request.query(query);
+    return res
 }
 }
-
-// var query = `UPDATE Servicios SET `
-//     if (servicio.Nombre != null){
-//         query += `Nombre = @Nombre, `
-//     }
-//     if (servicio.Descripcion != null){
-//         query += `Descripcion = @Descripcion, `
-//     }
-//     if (servicio.Foto != null){
-//         query += `Foto = @Foto, `
-//     }
-//     if (servicio.Precio != null){
-//         query += `Precio = @Precio`
-//     }
-//     if (query.endsWith(', ')){
-//         query = query.slice(0, -1)
-//     }
-//     query += ` WHERE id = @Id`
