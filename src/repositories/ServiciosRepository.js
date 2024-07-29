@@ -4,6 +4,7 @@ import sql from "mssql";
 
 export default class ServicioRepository{
 
+    
 async BorrarServicio(id, id_creator_user){
     var query = `DELETE FROM Servicios WHERE id = ${id} AND idCreador = ${id_creator_user}`;
     try {
@@ -118,14 +119,39 @@ async CrearServicio(servicio, disponibilidades){
     } finally {
         pool.close();
     }
+    //ejemplo de post
+    // {
+    //     "idCreador": 1,
+    //     "idCategoria": 1,
+    //     "Nombre": "Urias",
+    //     "Descripcion": "Pezzuti",
+    //     "Precio": 1,
+    //     "Disponibilidades": [
+    //       {
+    //         "Dia": 1,
+    //         "HoraDesde": "14:00",
+    //         "HoraHasta": "17:00",
+    //         "DuracionTurno": "02:00",
+    //         "Descanso": "00:30"
+    //       }
+    //     ]
+    //   }
 }
 
 async BuscarServicioPorNombre(Nombre, CategoriaNombre, UsuarioNombre){
     const pool = await getConnection()
     const request = await pool.request()
-    var query = `SELECT s.id, idCreador, idCategoria, s.Nombre, Descripcion, Foto, Precio, c.Nombre, u.Nombre from Servicios s
+    var query = `SELECT s.id, idCreador, idCategoria, s.Nombre, Descripcion, Foto, Precio, c.Nombre, u.Nombre, COUNT(sc.idServicio) AS cantidad_contratos
+    FROM
+    Servicios s
+    LEFT JOIN
+    ServiciosContratados sc ON s.id = sc.idServicio
     INNER JOIN Categorias c on s.idCategoria = c.id
-    INNER JOIN Usuarios u on s.idCreador = u.id WHERE `
+    INNER JOIN Usuarios u on s.idCreador = u.id
+    GROUP BY
+    s.id, s.Nombre, s.idCreador, s.idCategoria, s.Descripcion, s.Foto, s.Precio, c.Nombre, u.Nombre
+    ORDER BY
+    cantidad_contratos DESC WHERE `
     if (Nombre != null) {
         query +=  `s.Nombre LIKE @Nombre AND `
         request.input('Nombre', sql.VarChar(50), Nombre)
@@ -145,7 +171,7 @@ async BuscarServicioPorNombre(Nombre, CategoriaNombre, UsuarioNombre){
         query = query.slice(0, -6)
     }
     console.log(query)
-    const res = await request.query(query);
-    return res
+    const {recordset} = await request.query(query);
+    return recordset
 }
 }

@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
         res.status(200).json(servicios);
     } catch (error) {
         res.status(500).json({ error: error.message });
-    }
+    } 
 });
 
 router.delete("/:id/:id_creator_user", async (req, res) => {
