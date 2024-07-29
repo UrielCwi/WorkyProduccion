@@ -1,5 +1,5 @@
 import {getConnection} from '../BD/database.js'
-import sql from "mssql";
+import sql, {  } from "mssql";
 
 
 export default class ServicioRepository{
@@ -119,23 +119,32 @@ async CrearServicio(servicio, disponibilidades){
     } finally {
         pool.close();
     }
-    //ejemplo de post
-    // {
-    //     "idCreador": 1,
-    //     "idCategoria": 1,
-    //     "Nombre": "Urias",
-    //     "Descripcion": "Pezzuti",
-    //     "Precio": 1,
-    //     "Disponibilidades": [
-    //       {
-    //         "Dia": 1,
-    //         "HoraDesde": "14:00",
-    //         "HoraHasta": "17:00",
-    //         "DuracionTurno": "02:00",
-    //         "Descanso": "00:30"
-    //       }
-    //     ]
-    //   }
+}
+    async CrearServicio2prueba(servicio){
+        const pool = await getConnection();
+        const transaction = new sql.Transaction(pool);
+        try {
+            await transaction.begin();
+            await transaction.request()
+                .input('idCreador', sql.Int, servicio.idCreador)
+                .input('idCategoria', sql.Int, servicio.idCategoria)
+                .input('Nombre', sql.VarChar(50), servicio.Nombre)
+                .input('Descripcion', sql.VarChar(100), servicio.Descripcion)
+                .input('Foto', sql.VarChar(100), servicio.Foto)
+                .input('Precio', sql.Money, servicio.Precio)
+                .query(`
+                    INSERT INTO Servicios (idCreador, idCategoria, Nombre, Descripcion, Foto, Precio)
+                    VALUES (@idCreador, @idCategoria, @Nombre, @Descripcion, @Foto, @Precio);
+                    SELECT SCOPE_IDENTITY() AS idServicio;
+                `);
+            await transaction.commit();
+            console.log('Servicio y disponibilidades insertados correctamente.');
+        } catch (err) {
+            await transaction.rollback();
+            console.error('Error al insertar servicio y disponibilidades:', err);
+        } finally {
+            pool.close();
+        }
 }
 
 async BuscarServicioPorNombre(Nombre, CategoriaNombre, UsuarioNombre){
